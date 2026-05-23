@@ -1058,6 +1058,7 @@ main {
   margin-left: auto;
   margin-right: auto;
   max-width: 520px;
+  width: 100%;
 }
 
 .form-card h3 {
@@ -1067,6 +1068,7 @@ main {
   letter-spacing: 0.03em;
   color: #fff;
   margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .form-row {
@@ -1176,6 +1178,9 @@ main {
 .goals-section-inner {
   max-width: 900px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .goals-grid {
@@ -1185,6 +1190,7 @@ main {
   background: var(--border);
   border: 1px solid var(--border);
   margin-bottom: 2rem;
+  width: 100%;
 }
 
 .goal-card {
@@ -1429,6 +1435,8 @@ main {
   .bottom-nav { display: block; }
   main { padding-bottom: 80px; }
   .nav-list { display: none; }
+  /* Esconde o ícone de perfil/usuário do topo em mobile — o bottom-nav já cobre */
+  .user-menu-wrap { display: none; }
 }
 
 /* ══════════════════════════════
@@ -1438,9 +1446,9 @@ main {
   position: relative;
   background: #111;
   border: 1px solid var(--border-hover);
-  width: 90%;
-  max-width: 480px;
-  max-height: 90vh;
+  width: 92%;
+  max-width: 520px;
+  max-height: 92vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1552,11 +1560,18 @@ main {
 .dc-tab-content {
   display: none;
   padding: 16px;
-  max-height: 55vh;
+  max-height: 52vh;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .dc-tab-content.active { display: block; }
+
+/* Custom scrollbar — mais visível e atraente */
+.dc-tab-content::-webkit-scrollbar { width: 5px; }
+.dc-tab-content::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 10px; }
+.dc-tab-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 10px; }
+.dc-tab-content::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.35); }
 
 /* Card de info */
 .dc-card {
@@ -1679,21 +1694,23 @@ main {
 
 .dc-status-circle { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
-/* Save bar */
+/* Save bar — sempre visível no rodapé do modal */
 .dc-save-bar {
   display: flex;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 14px 16px;
   border-top: 1px solid rgba(255,255,255,0.07);
-  background: rgba(0,0,0,0.3);
+  background: #0d0d0d;
   flex-shrink: 0;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .dc-save-btn {
   background: var(--dc-accent, #5865f2);
   color: #fff;
   border: none;
-  padding: 8px 20px;
+  padding: 10px 24px;
   font-size: 10px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -1701,24 +1718,26 @@ main {
   cursor: pointer;
   transition: opacity 0.2s;
   font-weight: 600;
+  border-radius: 4px;
 }
 
 .dc-save-btn:hover { opacity: 0.85; }
 
 .dc-cancel-btn {
   background: transparent;
-  color: rgba(255,255,255,0.4);
-  border: none;
-  padding: 8px 14px;
+  color: rgba(255,255,255,0.45);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 10px 18px;
   font-size: 10px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   font-family: var(--font);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.2s;
+  border-radius: 4px;
 }
 
-.dc-cancel-btn:hover { color: #fff; }
+.dc-cancel-btn:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
 
 .dc-file-btn {
   display: inline-block;
@@ -1760,10 +1779,6 @@ main {
 
 .dc-close-btn:hover { background: rgba(255,255,255,0.12); }
 
-.dc-tab-content::-webkit-scrollbar { width: 3px; }
-.dc-tab-content::-webkit-scrollbar-track { background: transparent; }
-.dc-tab-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
-
 /* ══════════════════════════════
    TOUCH / MOBILE ADJUSTMENTS
 ══════════════════════════════ */
@@ -1785,4 +1800,71 @@ main {
   .login-field input { font-size: 16px; }
   .card-value { font-size: 1.5rem; }
   .section-label { font-size: 8px; }
+}
+
+/* ══════════════════════════════
+   PROFILE MODAL — MOBILE
+══════════════════════════════ */
+@media (max-width: 600px) {
+  .discord-profile-box {
+    width: 100%;
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .modal-overlay {
+    align-items: flex-end;
+  }
+
+  .dc-tab-content {
+    max-height: 54vh;
+  }
+
+  .dc-tabs {
+    padding: 0 8px;
+    gap: 0;
+  }
+
+  .dc-tab {
+    padding: 10px 10px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    flex: 1;
+    text-align: center;
+  }
+
+  .dc-save-bar {
+    padding: 12px 16px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ══════════════════════════════
+   GOALS SECTION — LABEL + FORM CENTERED
+══════════════════════════════ */
+#sec-goals .section-label {
+  display: block;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+#sec-goals .goals-section-inner > .section-label,
+#sec-goals > .section-label {
+  align-self: center;
+}
+
+/* Centralizar o form de nova meta e transação */
+#sec-goals .form-card,
+#sec-transactions .form-card {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#sec-transactions .add-inline-form {
+  margin-left: auto;
+  margin-right: auto;
 }
