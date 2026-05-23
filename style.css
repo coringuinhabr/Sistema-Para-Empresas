@@ -426,21 +426,27 @@ nav::before {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  gap: 1rem;
 }
 
 .nav-list {
   list-style: none;
   display: flex;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  position: static;
+  left: auto;
+  transform: none;
+  flex: 1;
+  justify-content: center;
+  gap: 0;
 }
 
 .logo {
-  font-size: 24px;
+  font-size: 16px;
   text-transform: uppercase;
-  letter-spacing: 4px;
+  letter-spacing: 3px;
   color: #fff;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-list li {
