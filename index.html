@@ -169,8 +169,8 @@
               <div class="dropdown-username" id="dropdown-username">—</div>
             </div>
             <div class="dropdown-divider"></div>
-            <button class="dropdown-item" onclick="openProfileModal('name')">Alterar nome</button>
-            <button class="dropdown-item" onclick="openProfileModal('password')">Alterar senha</button>
+            <button class="dropdown-item" onclick="openProfileModal('name')">Editar perfil</button>
+            <button class="dropdown-item" onclick="openProfileModal('password')">Privacidade e Seguranca</button>
             <button class="dropdown-item" onclick="openProfileModal('settings')">Configuracoes</button>
             <div class="dropdown-divider"></div>
             <button class="dropdown-item dropdown-item--danger" onclick="doLogout()">Sair da conta</button>
@@ -279,7 +279,7 @@
         </div>
 
         <!-- Formulário inline (oculto por padrão) -->
-        <div class="form-card add-inline-form" id="add-inline-form" style="display:none; margin-bottom:2rem; margin-left:0; max-width:100%;">
+        <div class="form-card add-inline-form" id="add-inline-form" style="display:none; margin-bottom:2rem; max-width:100%;">
           <h3>Nova Transacao</h3>
           <div class="form-row">
             <label>Tipo</label>
@@ -328,6 +328,7 @@
       <!-- METAS -->
       <section id="sec-goals" class="section">
         <span class="section-label">Metas Financeiras</span>
+        <div class="goals-section-inner">
         <div class="goals-grid" id="goals-grid">
           <div class="empty-state">Nenhuma meta criada ainda.</div>
         </div>
@@ -371,6 +372,7 @@
           </div>
           <button class="submit-btn" onclick="addGoal()">Criar Meta</button>
           <div class="success-msg" id="goal-ok">Meta criada com sucesso!</div>
+        </div>
         </div>
       </section>
 
