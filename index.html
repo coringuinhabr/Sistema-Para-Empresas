@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Financeiro Pessoal</title>
+  <link rel="stylesheet" href="style.css"/>
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ── LOGIN ── -->
+  <div id="login-screen">
+    <!-- Painel esquerdo: identidade -->
+    <div class="login-left">
+      <div class="login-left-logo">💰 Financeiro<br>Pessoal</div>
+      <div class="login-left-body">
+        <h1 class="login-left-title">Bem-vindo<br>de volta!</h1>
+        <p class="login-left-sub">Acesse sua conta agora mesmo.</p>
+        <button class="login-left-btn" onclick="switchPanel('login')">Entrar</button>
+      </div>
+      <span class="login-left-note" onclick="switchPanel('register')" style="cursor:pointer;">Não tem conta? Cadastre-se</span>
+    </div>
+
+    <!-- Painel direito: formulário -->
+    <div class="login-right">
+
+      <!-- FORMULÁRIO LOGIN -->
+      <div class="login-panel" id="panel-login">
+        <h2 class="login-right-title">Acesse sua conta</h2>
+        <p class="login-right-sub">Preencha seus dados</p>
+
+        <div class="login-field">
+          <span class="login-field-icon">👤</span>
+          <input type="text" id="login-user" placeholder="Usuário" autocomplete="username"/>
+        </div>
+        <div class="login-field">
+          <span class="login-field-icon">🔒</span>
+          <input type="password" id="login-pass" placeholder="Senha" autocomplete="current-password"/>
+        </div>
+
+        <div class="login-options">
+          <label class="remember-label">
+            <input type="checkbox" id="login-remember"/>
+            <span class="remember-check"></span>
+            Lembrar de mim
+          </label>
+        </div>
+
+        <button class="login-submit-btn" onclick="doLogin()">Entrar</button>
+        <div class="login-err" id="login-err">Usuário ou senha incorretos.</div>
+
+        <div class="login-divider"><span>ou</span></div>
+
+        <button class="google-btn" onclick="doGoogleLogin()">
+          <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Continuar com Google
+        </button>
+
+        <p class="login-switch-note">Novo por aqui? <span onclick="switchPanel('register')">Criar conta</span></p>
+      </div>
+
+      <!-- FORMULÁRIO CADASTRO -->
+      <div class="login-panel" id="panel-register" style="display:none;">
+        <h2 class="login-right-title">Crie sua conta</h2>
+        <p class="login-right-sub">Preencha seus dados</p>
+
+        <div class="login-field">
+          <span class="login-field-icon">👤</span>
+          <input type="text" id="reg-user" placeholder="Usuário" autocomplete="username"/>
+        </div>
+        <div class="login-field">
+          <span class="login-field-icon">🔒</span>
+          <input type="password" id="reg-pass" placeholder="Senha" autocomplete="new-password"/>
+        </div>
+        <div class="login-field">
+          <span class="login-field-icon">🔒</span>
+          <input type="password" id="reg-pass2" placeholder="Confirmar senha"/>
+        </div>
+
+        <button class="login-submit-btn" onclick="doRegister()">Cadastrar</button>
+        <div class="login-err" id="reg-err"></div>
+
+        <p class="login-switch-note">Já tem conta? <span onclick="switchPanel('login')">Entrar</span></p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── APP ── -->
+  <div id="app-screen">
+
+    <header>
+      <nav>
+        <div class="nav-inner">
+        <a class="logo" href="#">Financeiro Pessoal</a>
+        <ul class="nav-list" id="nav-list">
+          <li><a onclick="goTo('dashboard')" id="nl-dashboard">Dashboard</a></li>
+          <li><a onclick="goTo('transactions')" id="nl-transactions">Transações</a></li>
+          <li><a onclick="goTo('goals')" id="nl-goals">Metas</a></li>
+        </ul>
+
+        <!-- Menu 3 pontos -->
+        <div class="user-menu-wrap" id="user-menu-wrap">
+          <button class="user-menu-trigger" id="user-menu-trigger" onclick="toggleUserMenu()">
+            <div class="user-avatar" id="nav-avatar">👤</div>
+            <span class="dots-icon">⋮</span>
+          </button>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="dropdown-header">
+              <div class="dropdown-avatar-wrap" onclick="openProfilePhotoModal()">
+                <div class="dropdown-avatar" id="dropdown-avatar">👤</div>
+                <div class="avatar-edit-hint">Alterar foto</div>
+              </div>
+              <div class="dropdown-username" id="dropdown-username">—</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" onclick="openProfileModal('name')">✏️ &nbsp;Alterar nome</button>
+            <button class="dropdown-item" onclick="openProfileModal('password')">🔒 &nbsp;Alterar senha</button>
+            <button class="dropdown-item" onclick="openProfileModal('settings')">⚙️ &nbsp;Configurações</button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item dropdown-item--danger" onclick="doLogout()">↩ &nbsp;Sair da conta</button>
+          </div>
+        </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+
+      <!-- DASHBOARD -->
+      <section id="sec-dashboard" class="section">
+        <span class="section-label">Visão Geral</span>
+
+        <!-- Cards de resumo -->
+        <div class="cards-grid">
+          <div class="summary-card">
+            <div class="card-label">Saldo Total</div>
+            <div class="card-value balance" id="d-balance">R$ 0,00</div>
+          </div>
+          <div class="summary-card">
+            <div class="card-label">Entradas</div>
+            <div class="card-value income" id="d-income">R$ 0,00</div>
+          </div>
+          <div class="summary-card">
+            <div class="card-label">Saídas</div>
+            <div class="card-value expense" id="d-expense">R$ 0,00</div>
+          </div>
+          <div class="summary-card">
+            <div class="card-label">Metas Ativas</div>
+            <div class="card-value goals-v" id="d-goals">0</div>
+          </div>
+        </div>
+
+        <!-- Gráficos — linha 1: Evolução + Distribuição -->
+        <div class="charts-row">
+          <div class="chart-box chart-box--wide">
+            <div class="chart-label">Evolução Mensal</div>
+            <canvas id="chart-evolution"></canvas>
+          </div>
+          <div class="chart-box">
+            <div class="chart-label">Distribuição</div>
+            <canvas id="chart-donut"></canvas>
+          </div>
+        </div>
+
+        <!-- Gráficos — linha 2: Categorias + Metas -->
+        <div class="charts-row">
+          <div class="chart-box">
+            <div class="chart-label">Gastos por Categoria</div>
+            <canvas id="chart-categories"></canvas>
+          </div>
+          <div class="chart-box">
+            <div class="chart-label">Progresso das Metas</div>
+            <canvas id="chart-goals"></canvas>
+          </div>
+        </div>
+
+        <!-- Últimas transações -->
+        <div class="recent-title">Últimas Transações</div>
+        <div class="tx-list" id="d-recent"></div>
+      </section>
+
+      <!-- TRANSAÇÕES -->
+      <section id="sec-transactions" class="section">
+        <span class="section-label">Histórico</span>
+
+        <div class="tx-top-bar">
+          <!-- Navegação de competência -->
+          <div class="competencia-nav">
+            <button class="comp-arrow" onclick="changeMonth(-1)">&#8592;</button>
+            <span class="comp-label" id="comp-label">—</span>
+            <button class="comp-arrow" onclick="changeMonth(1)" id="comp-next">&#8594;</button>
+          </div>
+
+          <div class="filters">
+            <button class="filter-btn active" id="f-all" onclick="setFilter('all')">Todas</button>
+            <button class="filter-btn" id="f-income" onclick="setFilter('income')">Entradas</button>
+            <button class="filter-btn" id="f-expense" onclick="setFilter('expense')">Saídas</button>
+          </div>
+          <button class="add-tx-btn" onclick="toggleAddForm()">+ Adicionar</button>
+        </div>
+
+        <!-- Resumo do mês -->
+        <div class="month-summary" id="month-summary">
+          <div class="month-summary-item">
+            <span class="month-summary-label">Saldo Anterior</span>
+            <span class="month-summary-val" id="ms-prev">R$ 0,00</span>
+          </div>
+          <div class="month-summary-sep">+</div>
+          <div class="month-summary-item">
+            <span class="month-summary-label">Entradas</span>
+            <span class="month-summary-val income" id="ms-income">R$ 0,00</span>
+          </div>
+          <div class="month-summary-sep">−</div>
+          <div class="month-summary-item">
+            <span class="month-summary-label">Saídas</span>
+            <span class="month-summary-val expense" id="ms-expense">R$ 0,00</span>
+          </div>
+          <div class="month-summary-sep">=</div>
+          <div class="month-summary-item">
+            <span class="month-summary-label">Saldo Final</span>
+            <span class="month-summary-val balance" id="ms-balance">R$ 0,00</span>
+          </div>
+        </div>
+
+        <!-- Formulário inline (oculto por padrão) -->
+        <div class="form-card add-inline-form" id="add-inline-form" style="display:none; margin-bottom:2rem; margin-left:0; max-width:100%;">
+          <h3>Nova Transação</h3>
+          <div class="form-row">
+            <label>Tipo</label>
+            <div class="type-toggle">
+              <button class="type-btn sel-income" id="tb-income" onclick="setType('income')">+ Entrada</button>
+              <button class="type-btn" id="tb-expense" onclick="setType('expense')">− Saída</button>
+            </div>
+          </div>
+          <div class="add-inline-grid">
+            <div class="form-row">
+              <label>Descrição <span class="req">*</span></label>
+              <input type="text" id="tx-desc" placeholder="Ex: Salário, Supermercado..." required/>
+            </div>
+            <div class="form-row">
+              <label>Valor (R$) <span class="req">*</span></label>
+              <input type="text" id="tx-val" placeholder="R$ 0,00" inputmode="numeric" oninput="maskCurrency(this)" required/>
+            </div>
+            <div class="form-row">
+              <label>Categoria <span class="req">*</span></label>
+              <select id="tx-cat">
+                <option value="Geral">Geral</option>
+                <option value="Alimentação">Alimentação</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Saúde">Saúde</option>
+                <option value="Lazer">Lazer</option>
+                <option value="Educação">Educação</option>
+                <option value="Moradia">Moradia</option>
+                <option value="Salário">Salário</option>
+                <option value="Freelance">Freelance</option>
+                <option value="Investimento">Investimento</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>Data <span class="req">*</span></label>
+              <input type="date" id="tx-date" required/>
+            </div>
+          </div>
+          <button class="submit-btn" onclick="addTransaction()">Registrar</button>
+          <div class="success-msg" id="tx-ok">✓ Transação registrada com sucesso!</div>
+        </div>
+
+        <div class="tx-list" id="tx-list"></div>
+      </section>
+
+      <!-- METAS -->
+      <section id="sec-goals" class="section">
+        <span class="section-label">Metas Financeiras</span>
+        <div class="goals-grid" id="goals-grid">
+          <div class="empty-state">Nenhuma meta criada ainda.</div>
+        </div>
+        <div class="form-card" style="margin-top: 2rem;">
+          <h3>Nova Meta</h3>
+          <div class="form-row">
+            <label>Nome da Meta <span class="req">*</span></label>
+            <input type="text" id="goal-name" placeholder="Ex: Viagem, Reserva de emergência..." required/>
+          </div>
+          <div class="form-row">
+            <label>Categoria <span class="req">*</span></label>
+            <select id="goal-category" required>
+              <option value="">Selecione uma categoria</option>
+              <option value="Geral">Geral</option>
+              <option value="Veículo">Veículo</option>
+              <option value="Imóvel">Imóvel</option>
+              <option value="Viagem">Viagem</option>
+              <option value="Emergência">Reserva de Emergência</option>
+              <option value="Educação">Educação</option>
+              <option value="Saúde">Saúde</option>
+              <option value="Investimento">Investimento</option>
+              <option value="Eletrônicos">Eletrônicos</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Valor Alvo <span class="req">*</span></label>
+            <input type="text" id="goal-target" placeholder="R$ 0,00" inputmode="numeric" oninput="maskCurrency(this)" required/>
+          </div>
+          <div class="form-row">
+            <label>Valor Atual <span class="req">*</span></label>
+            <input type="text" id="goal-current" placeholder="R$ 0,00" inputmode="numeric" oninput="maskCurrency(this)" required/>
+          </div>
+          <div class="form-row">
+            <label>Aporte Mensal Estimado <span class="req">*</span></label>
+            <input type="text" id="goal-monthly" placeholder="R$ 0,00" inputmode="numeric" oninput="maskCurrency(this)" required/>
+          </div>
+          <div class="form-row">
+            <label>Prazo</label>
+            <input type="date" id="goal-deadline"/>
+          </div>
+          <button class="submit-btn" onclick="addGoal()">Criar Meta</button>
+          <div class="success-msg" id="goal-ok">✓ Meta criada com sucesso!</div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer">
+      <span>© 2025 Financeiro Pessoal</span>
+      <span id="foot-user"></span>
+    </footer>
+  </div>
+
+  <!-- MODAL adicionar fundos -->
+  <div class="modal-overlay" id="fund-modal">
+    <div class="modal-box">
+      <h3>Adicionar Fundos à Meta</h3>
+      <div class="form-row">
+        <label>Valor (R$)</label>
+        <input type="number" id="fund-val" placeholder="0,00" min="0" step="0.01"/>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeFundModal()">Cancelar</button>
+        <button class="modal-confirm" onclick="confirmFund()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL editar meta -->
+  <div class="modal-overlay" id="edit-modal">
+    <div class="modal-box">
+      <h3>Editar Meta</h3>
+      <div class="form-row">
+        <label>Nome da Meta <span class="req">*</span></label>
+        <input type="text" id="edit-goal-name" placeholder="Nome da meta"/>
+      </div>
+      <div class="form-row">
+        <label>Categoria <span class="req">*</span></label>
+        <select id="edit-goal-category">
+          <option value="Geral">Geral</option>
+          <option value="Veículo">Veículo</option>
+          <option value="Imóvel">Imóvel</option>
+          <option value="Viagem">Viagem</option>
+          <option value="Emergência">Reserva de Emergência</option>
+          <option value="Educação">Educação</option>
+          <option value="Saúde">Saúde</option>
+          <option value="Investimento">Investimento</option>
+          <option value="Eletrônicos">Eletrônicos</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Valor Alvo <span class="req">*</span></label>
+        <input type="text" id="edit-goal-target" placeholder="R$ 0,00" inputmode="numeric" oninput="maskCurrency(this)"/>
+      </div>
+      <div class="form-row">
+        <label>Valor Atual <span class="req">*</span></label>
+        <input type="text" id="edit-goal-current" placeholder="R$ 0,00" inputmode="numeric" oninput="maskCurrency(this)"/>
+      </div>
+      <div class="form-row">
+        <label>Aporte Mensal <span class="req">*</span></label>
+        <input type="text" id="edit-goal-monthly" placeholder="R$ 0,00" inputmode="numeric" oninput="maskCurrency(this)"/>
+      </div>
+      <div class="form-row">
+        <label>Prazo</label>
+        <input type="date" id="edit-goal-deadline"/>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeEditModal()">Cancelar</button>
+        <button class="modal-confirm" onclick="confirmEditGoal()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PERFIL -->
+  <div class="modal-overlay" id="profile-modal">
+    <div class="modal-box profile-modal-box">
+      <div class="profile-modal-header">
+        <h3 id="profile-modal-title">Perfil</h3>
+        <button class="modal-close-btn" onclick="closeProfileModal()">×</button>
+      </div>
+
+      <!-- Seção: Alterar Nome -->
+      <div id="profile-section-name">
+        <div class="form-row">
+          <label>Novo nome de exibição</label>
+          <input type="text" id="profile-new-name" placeholder="Digite seu nome..."/>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-cancel" onclick="closeProfileModal()">Cancelar</button>
+          <button class="modal-confirm" onclick="saveProfileName()">Salvar</button>
+        </div>
+      </div>
+
+      <!-- Seção: Alterar Senha -->
+      <div id="profile-section-password" style="display:none;">
+        <div class="form-row">
+          <label>Senha atual</label>
+          <input type="password" id="profile-old-pass" placeholder="Senha atual"/>
+        </div>
+        <div class="form-row">
+          <label>Nova senha</label>
+          <input type="password" id="profile-new-pass" placeholder="Nova senha (mín. 4 caracteres)"/>
+        </div>
+        <div class="form-row">
+          <label>Confirmar nova senha</label>
+          <input type="password" id="profile-new-pass2" placeholder="Confirmar nova senha"/>
+        </div>
+        <div class="login-err" id="profile-pass-err"></div>
+        <div class="modal-actions">
+          <button class="modal-cancel" onclick="closeProfileModal()">Cancelar</button>
+          <button class="modal-confirm" onclick="saveProfilePassword()">Salvar</button>
+        </div>
+      </div>
+
+      <!-- Seção: Configurações -->
+      <div id="profile-section-settings" style="display:none;">
+        <div class="settings-item">
+          <span class="settings-label">Tema</span>
+          <span class="settings-value settings-muted">Escuro (padrão)</span>
+        </div>
+        <div class="settings-item">
+          <span class="settings-label">Moeda</span>
+          <span class="settings-value settings-muted">BRL — Real Brasileiro</span>
+        </div>
+        <div class="settings-item">
+          <span class="settings-label">Versão</span>
+          <span class="settings-value settings-muted">1.0.0</span>
+        </div>
+        <div class="modal-actions" style="margin-top:1.5rem;">
+          <button class="modal-cancel" onclick="closeProfileModal()">Fechar</button>
+        </div>
+      </div>
+
+      <div class="success-msg" id="profile-ok" style="display:none; margin-top:0.5rem;">✓ Salvo com sucesso!</div>
+    </div>
+  </div>
+
+  <!-- MODAL FOTO -->
+  <div class="modal-overlay" id="photo-modal">
+    <div class="modal-box profile-modal-box">
+      <div class="profile-modal-header">
+        <h3>Alterar foto de perfil</h3>
+        <button class="modal-close-btn" onclick="closePhotoModal()">×</button>
+      </div>
+      <div class="photo-preview-wrap">
+        <div class="photo-preview" id="photo-preview">👤</div>
+      </div>
+      <div class="form-row" style="margin-top:1rem;">
+        <label>Selecionar imagem</label>
+        <input type="file" id="photo-input" accept="image/*" onchange="previewPhoto(this)"/>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closePhotoModal()">Cancelar</button>
+        <button class="modal-confirm" onclick="savePhoto()">Salvar foto</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="mobile-navbar.js"></script>
+</body>
+</html>
