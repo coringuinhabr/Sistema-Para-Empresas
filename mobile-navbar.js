@@ -1,1 +1,1 @@
-/* mobile-navbar.js — hambúrguer removido; arquivo mantido por compatibilidade */
+/* mobile-navbar.js — hambúrguer removido; compatibilidade mantida */

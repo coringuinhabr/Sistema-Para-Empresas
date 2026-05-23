@@ -335,6 +335,28 @@
       <span>© 2025 Financeiro Pessoal</span>
       <span id="foot-user"></span>
     </footer>
+
+    <!-- ── BOTTOM NAV (mobile) ── -->
+    <nav class="bottom-nav" id="bottom-nav">
+      <div class="bottom-nav-inner">
+        <button class="bottom-nav-btn active" id="bnav-dashboard" onclick="goTo('dashboard')">
+          <span class="bnav-icon">📊</span>
+          <span>Início</span>
+        </button>
+        <button class="bottom-nav-btn" id="bnav-transactions" onclick="goTo('transactions')">
+          <span class="bnav-icon">↕️</span>
+          <span>Transações</span>
+        </button>
+        <button class="bottom-nav-btn" id="bnav-goals" onclick="goTo('goals')">
+          <span class="bnav-icon">🎯</span>
+          <span>Metas</span>
+        </button>
+        <button class="bottom-nav-btn" id="bnav-profile" onclick="openProfileModal('name')">
+          <div style="width:24px;height:24px;border-radius:50%;background:var(--surface2);border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;" id="bnav-avatar">👤</div>
+          <span>Perfil</span>
+        </button>
+      </div>
+    </nav>
   </div>
 
   <!-- MODAL adicionar fundos -->
@@ -398,88 +420,173 @@
     </div>
   </div>
 
-  <!-- MODAL PERFIL -->
+  <!-- MODAL PERFIL — ESTILO DISCORD -->
   <div class="modal-overlay" id="profile-modal">
-    <div class="modal-box profile-modal-box">
-      <div class="profile-modal-header">
-        <h3 id="profile-modal-title">Perfil</h3>
-        <button class="modal-close-btn" onclick="closeProfileModal()">×</button>
+    <div class="discord-profile-box">
+      <button class="dc-close-btn" onclick="closeProfileModal()">×</button>
+
+      <!-- ── Tabs ── -->
+      <div class="dc-tabs">
+        <button class="dc-tab active" id="dc-tab-perfil"     onclick="dcSwitchTab('perfil')">Perfil</button>
+        <button class="dc-tab"        id="dc-tab-customizar" onclick="dcSwitchTab('customizar')">Customizar</button>
+        <button class="dc-tab"        id="dc-tab-seguranca"  onclick="dcSwitchTab('seguranca')">Segurança</button>
       </div>
 
-      <!-- Seção: Alterar Nome -->
-      <div id="profile-section-name">
-        <div class="form-row">
-          <label>Novo nome de exibição</label>
-          <input type="text" id="profile-new-name" placeholder="Digite seu nome..."/>
+      <!-- ════ TAB: PERFIL ════ -->
+      <div class="dc-tab-content active" id="dc-tab-content-perfil">
+        <!-- Banner + Avatar -->
+        <div class="dc-banner" id="dc-banner" onclick="dcTriggerBanner()" title="Alterar banner">
+          <div class="dc-banner-img" id="dc-banner-bg" style="width:100%;height:100%;"></div>
         </div>
-        <div class="modal-actions">
-          <button class="modal-cancel" onclick="closeProfileModal()">Cancelar</button>
-          <button class="modal-confirm" onclick="saveProfileName()">Salvar</button>
+
+        <div class="dc-avatar-area">
+          <div class="dc-avatar-wrap" onclick="dcTriggerAvatar()" title="Alterar foto">
+            <div class="dc-avatar" id="dc-avatar-preview">👤</div>
+            <div class="dc-status-dot" id="dc-status-dot"></div>
+          </div>
+          <button class="dc-edit-btn" onclick="dcSwitchTab('customizar')">Editar Perfil</button>
+        </div>
+
+        <!-- Card de info -->
+        <div class="dc-card">
+          <div class="dc-username-display" id="dc-display-name">Usuário</div>
+          <div class="dc-handle" id="dc-handle">@usuario</div>
+
+          <div class="dc-divider"></div>
+
+          <div class="dc-section-title">Sobre mim</div>
+          <div class="dc-bio" id="dc-bio-display">—</div>
+
+          <div class="dc-divider"></div>
+
+          <div class="dc-section-title">Conquistas</div>
+          <div class="dc-badges" id="dc-badges">
+            <div class="dc-badge">💰 Financeiro Pessoal</div>
+          </div>
         </div>
       </div>
 
-      <!-- Seção: Alterar Senha -->
-      <div id="profile-section-password" style="display:none;">
-        <div class="form-row">
-          <label>Senha atual</label>
-          <input type="password" id="profile-old-pass" placeholder="Senha atual"/>
+      <!-- ════ TAB: CUSTOMIZAR ════ -->
+      <div class="dc-tab-content" id="dc-tab-content-customizar">
+
+        <div class="dc-form-row">
+          <label class="dc-form-label">Nome de exibição</label>
+          <input type="text" class="dc-form-input" id="dc-input-name" placeholder="Seu nome..."/>
         </div>
-        <div class="form-row">
-          <label>Nova senha</label>
-          <input type="password" id="profile-new-pass" placeholder="Nova senha (mín. 4 caracteres)"/>
+
+        <div class="dc-form-row">
+          <label class="dc-form-label">Sobre mim</label>
+          <textarea class="dc-form-input dc-form-textarea" id="dc-input-bio" placeholder="Uma breve descrição sobre você..."></textarea>
         </div>
-        <div class="form-row">
-          <label>Confirmar nova senha</label>
-          <input type="password" id="profile-new-pass2" placeholder="Confirmar nova senha"/>
+
+        <div class="dc-form-row">
+          <label class="dc-form-label">Foto de perfil</label>
+          <label class="dc-file-btn" for="dc-avatar-input">📷 Escolher imagem</label>
+          <input type="file" id="dc-avatar-input" accept="image/*" style="display:none" onchange="dcPreviewAvatar(this)"/>
+        </div>
+
+        <div class="dc-form-row">
+          <label class="dc-form-label">Banner de perfil</label>
+          <!-- Opção 1: cor sólida -->
+          <div style="margin-bottom:6px; font-size:10px; letter-spacing:1px; color:rgba(255,255,255,0.4);">COR</div>
+          <div class="dc-color-row" id="dc-banner-colors">
+            <div class="dc-color-swatch selected" style="background:#1a1a2e" data-color="#1a1a2e" onclick="dcSelectBannerColor(this)"></div>
+            <div class="dc-color-swatch" style="background:#16213e" data-color="#16213e" onclick="dcSelectBannerColor(this)"></div>
+            <div class="dc-color-swatch" style="background:#0f3460" data-color="#0f3460" onclick="dcSelectBannerColor(this)"></div>
+            <div class="dc-color-swatch" style="background:#1e3a1e" data-color="#1e3a1e" onclick="dcSelectBannerColor(this)"></div>
+            <div class="dc-color-swatch" style="background:#3a1e1e" data-color="#3a1e1e" onclick="dcSelectBannerColor(this)"></div>
+            <div class="dc-color-swatch" style="background:#2d1b69" data-color="#2d1b69" onclick="dcSelectBannerColor(this)"></div>
+            <div class="dc-color-swatch" style="background:#1a3a2e" data-color="#1a3a2e" onclick="dcSelectBannerColor(this)"></div>
+            <div class="dc-color-swatch" style="background:#2a2a2a" data-color="#2a2a2a" onclick="dcSelectBannerColor(this)"></div>
+          </div>
+          <div style="margin:8px 0 6px; font-size:10px; letter-spacing:1px; color:rgba(255,255,255,0.4);">OU IMAGEM</div>
+          <label class="dc-file-btn" for="dc-banner-input">🖼 Escolher imagem</label>
+          <input type="file" id="dc-banner-input" accept="image/*" style="display:none" onchange="dcPreviewBanner(this)"/>
+        </div>
+
+        <div class="dc-form-row">
+          <label class="dc-form-label">Cor de destaque</label>
+          <div class="dc-color-row" id="dc-accent-colors">
+            <div class="dc-color-swatch selected" style="background:#5865f2" data-color="#5865f2" onclick="dcSelectAccent(this)"></div>
+            <div class="dc-color-swatch" style="background:#22c55e" data-color="#22c55e" onclick="dcSelectAccent(this)"></div>
+            <div class="dc-color-swatch" style="background:#3b82f6" data-color="#3b82f6" onclick="dcSelectAccent(this)"></div>
+            <div class="dc-color-swatch" style="background:#f59e0b" data-color="#f59e0b" onclick="dcSelectAccent(this)"></div>
+            <div class="dc-color-swatch" style="background:#ef4444" data-color="#ef4444" onclick="dcSelectAccent(this)"></div>
+            <div class="dc-color-swatch" style="background:#a855f7" data-color="#a855f7" onclick="dcSelectAccent(this)"></div>
+            <div class="dc-color-swatch" style="background:#ec4899" data-color="#ec4899" onclick="dcSelectAccent(this)"></div>
+            <div class="dc-color-swatch" style="background:#14b8a6" data-color="#14b8a6" onclick="dcSelectAccent(this)"></div>
+          </div>
+        </div>
+
+        <div class="dc-form-row">
+          <label class="dc-form-label">Status</label>
+          <div class="dc-status-row">
+            <button class="dc-status-opt selected" data-status="online" data-color="#23a55a" style="--s-color:#23a55a" onclick="dcSelectStatus(this)">
+              <span class="dc-status-circle" style="background:#23a55a"></span> Online
+            </button>
+            <button class="dc-status-opt" data-status="idle" data-color="#f0b232" style="--s-color:#f0b232" onclick="dcSelectStatus(this)">
+              <span class="dc-status-circle" style="background:#f0b232"></span> Ausente
+            </button>
+            <button class="dc-status-opt" data-status="dnd" data-color="#f23f43" style="--s-color:#f23f43" onclick="dcSelectStatus(this)">
+              <span class="dc-status-circle" style="background:#f23f43"></span> Ocupado
+            </button>
+            <button class="dc-status-opt" data-status="offline" data-color="#80848e" style="--s-color:#80848e" onclick="dcSelectStatus(this)">
+              <span class="dc-status-circle" style="background:#80848e"></span> Invisível
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ════ TAB: SEGURANÇA ════ -->
+      <div class="dc-tab-content" id="dc-tab-content-seguranca">
+        <div class="dc-form-row">
+          <label class="dc-form-label">Senha atual</label>
+          <input type="password" class="dc-form-input" id="profile-old-pass" placeholder="Senha atual"/>
+        </div>
+        <div class="dc-form-row">
+          <label class="dc-form-label">Nova senha</label>
+          <input type="password" class="dc-form-input" id="profile-new-pass" placeholder="Nova senha (mín. 4 caracteres)"/>
+        </div>
+        <div class="dc-form-row">
+          <label class="dc-form-label">Confirmar nova senha</label>
+          <input type="password" class="dc-form-input" id="profile-new-pass2" placeholder="Confirmar nova senha"/>
         </div>
         <div class="login-err" id="profile-pass-err"></div>
-        <div class="modal-actions">
-          <button class="modal-cancel" onclick="closeProfileModal()">Cancelar</button>
-          <button class="modal-confirm" onclick="saveProfilePassword()">Salvar</button>
+
+        <div style="margin-top:8px;">
+          <button class="dc-save-btn" onclick="saveProfilePassword()">Alterar senha</button>
         </div>
+
+        <div class="dc-divider" style="margin:20px 0;"></div>
+
+        <div style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-bottom:10px;">App</div>
+        <div style="font-size:12px; color:rgba(255,255,255,0.4); letter-spacing:1px;">Versão 1.0.0 · BRL — Real Brasileiro</div>
       </div>
 
-      <!-- Seção: Configurações -->
-      <div id="profile-section-settings" style="display:none;">
-        <div class="settings-item">
-          <span class="settings-label">Tema</span>
-          <span class="settings-value settings-muted">Escuro (padrão)</span>
-        </div>
-        <div class="settings-item">
-          <span class="settings-label">Moeda</span>
-          <span class="settings-value settings-muted">BRL — Real Brasileiro</span>
-        </div>
-        <div class="settings-item">
-          <span class="settings-label">Versão</span>
-          <span class="settings-value settings-muted">1.0.0</span>
-        </div>
-        <div class="modal-actions" style="margin-top:1.5rem;">
-          <button class="modal-cancel" onclick="closeProfileModal()">Fechar</button>
-        </div>
+      <!-- Save bar (só aparece nos tabs que precisam) -->
+      <div class="dc-save-bar" id="dc-save-bar">
+        <button class="dc-cancel-btn" onclick="closeProfileModal()">Cancelar</button>
+        <button class="dc-save-btn" onclick="dcSaveProfile()">Salvar alterações</button>
       </div>
 
-      <div class="success-msg" id="profile-ok" style="display:none; margin-top:0.5rem;">✓ Salvo com sucesso!</div>
+      <div class="success-msg" id="profile-ok" style="display:none; margin: 0 16px 12px; text-align:center;">✓ Salvo com sucesso!</div>
+
+      <!-- Compat stubs para o app.js original (não visíveis) -->
+      <div id="profile-section-name"     style="display:none;"></div>
+      <div id="profile-section-password" style="display:none;"></div>
+      <div id="profile-section-settings" style="display:none;"></div>
+      <div id="profile-modal-title"      style="display:none;"></div>
     </div>
   </div>
 
-  <!-- MODAL FOTO -->
-  <div class="modal-overlay" id="photo-modal">
+  <!-- MODAL FOTO (mantido para compatibilidade, mas o fluxo principal agora é via Discord modal) -->
+  <div class="modal-overlay" id="photo-modal" style="display:none!important;">
     <div class="modal-box profile-modal-box">
-      <div class="profile-modal-header">
-        <h3>Alterar foto de perfil</h3>
-        <button class="modal-close-btn" onclick="closePhotoModal()">×</button>
-      </div>
       <div class="photo-preview-wrap">
         <div class="photo-preview" id="photo-preview">👤</div>
       </div>
-      <div class="form-row" style="margin-top:1rem;">
-        <label>Selecionar imagem</label>
-        <input type="file" id="photo-input" accept="image/*" onchange="previewPhoto(this)"/>
-      </div>
-      <div class="modal-actions">
-        <button class="modal-cancel" onclick="closePhotoModal()">Cancelar</button>
-        <button class="modal-confirm" onclick="savePhoto()">Salvar foto</button>
-      </div>
+      <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this)"/>
     </div>
   </div>
 

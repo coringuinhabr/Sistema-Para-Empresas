@@ -1197,3 +1197,287 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+/* ══════════════════════════════════════════════════════
+   DISCORD PROFILE MODAL — Lógica de customização
+══════════════════════════════════════════════════════ */
+
+// Estado pendente (não salvo até clicar em "Salvar")
+let _dcPending = {
+  name: null,
+  bio: null,
+  avatarDataUrl: null,
+  bannerColor: null,
+  bannerImgUrl: null,
+  accentColor: null,
+  status: null
+};
+
+/* ── Abrir / Fechar ── */
+function openProfileModal(section) {
+  document.getElementById('user-dropdown').classList.remove('open');
+  _dcPending = { name:null, bio:null, avatarDataUrl:null, bannerColor:null, bannerImgUrl:null, accentColor:null, status:null };
+
+  const profile = loadData('profile') || {};
+
+  // Popula preview com dados salvos
+  _dcApplyProfileToUI(profile);
+
+  // Preenche inputs
+  document.getElementById('dc-input-name').value = profile.displayName || currentUser || '';
+  document.getElementById('dc-input-bio').value  = profile.bio || '';
+
+  // Seção inicial
+  const tabMap = { name: 'customizar', password: 'seguranca', settings: 'perfil' };
+  dcSwitchTab(tabMap[section] || 'perfil');
+
+  document.getElementById('profile-ok').style.display = 'none';
+  document.getElementById('profile-modal').classList.add('open');
+}
+
+function closeProfileModal() {
+  document.getElementById('profile-modal').classList.remove('open');
+  // Reverte previews para estado salvo (descarta pending)
+  const profile = loadData('profile') || {};
+  _dcApplyProfileToUI(profile);
+}
+
+/* ── Aplica dados do perfil à UI ── */
+function _dcApplyProfileToUI(profile) {
+  // Nome
+  const name = profile.displayName || currentUser || 'Usuário';
+  const el = document.getElementById('dc-display-name');
+  if (el) el.textContent = name;
+  const handle = document.getElementById('dc-handle');
+  if (handle) handle.textContent = '@' + (currentUser || 'usuario');
+
+  // Bio
+  const bio = document.getElementById('dc-bio-display');
+  if (bio) bio.textContent = profile.bio || '—';
+
+  // Avatar
+  const av = profile.photo || null;
+  _setDcAvatar(av);
+
+  // Banner
+  const bc = profile.bannerColor || '#1a1a2e';
+  const bi = profile.bannerImgUrl || null;
+  _setDcBanner(bc, bi);
+
+  // Accent
+  const ac = profile.accentColor || '#5865f2';
+  _setDcAccent(ac);
+
+  // Status
+  const st = profile.status || 'online';
+  const statusColors = { online:'#23a55a', idle:'#f0b232', dnd:'#f23f43', offline:'#80848e' };
+  const dot = document.getElementById('dc-status-dot');
+  if (dot) dot.style.background = statusColors[st] || '#23a55a';
+
+  // Atualizar badges com contagem de transações
+  _updateBadges();
+}
+
+function _setDcAvatar(dataUrl) {
+  const targets = ['dc-avatar-preview', 'nav-avatar', 'dropdown-avatar', 'photo-preview', 'bnav-avatar'];
+  targets.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (id === 'bnav-avatar') {
+      el.innerHTML = dataUrl ? `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>` : '👤';
+    } else {
+      el.innerHTML = dataUrl ? `<img src="${dataUrl}" alt="avatar" style="width:100%;height:100%;object-fit:cover;"/>` : '👤';
+    }
+  });
+}
+
+function _setDcBanner(color, imgUrl) {
+  const banner   = document.getElementById('dc-banner');
+  const bannerBg = document.getElementById('dc-banner-bg');
+  if (!banner) return;
+
+  if (imgUrl) {
+    banner.style.backgroundImage = `url(${imgUrl})`;
+    banner.style.backgroundSize  = 'cover';
+    banner.style.backgroundPosition = 'center';
+    banner.style.backgroundColor = 'transparent';
+  } else {
+    banner.style.backgroundImage = 'none';
+    banner.style.backgroundColor = color || '#1a1a2e';
+  }
+
+  // Atualiza CSS var para o modal inteiro
+  document.documentElement.style.setProperty('--dc-banner-color', color || '#1a1a2e');
+}
+
+function _setDcAccent(color) {
+  document.documentElement.style.setProperty('--dc-accent', color);
+}
+
+function _updateBadges() {
+  const badges = document.getElementById('dc-badges');
+  if (!badges || !currentUser) return;
+  const txs   = getTx ? getTx() : [];
+  const goals = getGoals ? getGoals() : [];
+  let html = '<div class="dc-badge">💰 Financeiro Pessoal</div>';
+  if (txs.length >= 10)  html += '<div class="dc-badge">📊 10+ Transações</div>';
+  if (goals.length >= 1) html += '<div class="dc-badge">🎯 Economizador</div>';
+  if (txs.length >= 50)  html += '<div class="dc-badge">⭐ Usuário Ativo</div>';
+  badges.innerHTML = html;
+}
+
+/* ── Tabs ── */
+function dcSwitchTab(tab) {
+  ['perfil','customizar','seguranca'].forEach(t => {
+    document.getElementById('dc-tab-' + t).classList.toggle('active', t === tab);
+    document.getElementById('dc-tab-content-' + t).classList.toggle('active', t === tab);
+  });
+
+  // Save bar aparece só em customizar
+  const saveBar = document.getElementById('dc-save-bar');
+  if (saveBar) saveBar.style.display = (tab === 'customizar') ? 'flex' : 'none';
+}
+
+/* ── Avatar ── */
+function dcTriggerAvatar() {
+  document.getElementById('dc-avatar-input').click();
+}
+
+function dcPreviewAvatar(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    _dcPending.avatarDataUrl = e.target.result;
+    _setDcAvatar(e.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ── Banner ── */
+function dcTriggerBanner() {
+  // Só abre file picker se clicar com intenção (tab customizar)
+  dcSwitchTab('customizar');
+}
+
+function dcPreviewBanner(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    _dcPending.bannerImgUrl  = e.target.result;
+    _dcPending.bannerColor   = null;
+    _setDcBanner(null, e.target.result);
+    // Deseleciona cores
+    document.querySelectorAll('#dc-banner-colors .dc-color-swatch').forEach(s => s.classList.remove('selected'));
+  };
+  reader.readAsDataURL(file);
+}
+
+function dcSelectBannerColor(el) {
+  document.querySelectorAll('#dc-banner-colors .dc-color-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  const color = el.dataset.color;
+  _dcPending.bannerColor  = color;
+  _dcPending.bannerImgUrl = null;
+  _setDcBanner(color, null);
+}
+
+/* ── Accent ── */
+function dcSelectAccent(el) {
+  document.querySelectorAll('#dc-accent-colors .dc-color-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  const color = el.dataset.color;
+  _dcPending.accentColor = color;
+  _setDcAccent(color);
+}
+
+/* ── Status ── */
+function dcSelectStatus(el) {
+  document.querySelectorAll('.dc-status-opt').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  const status = el.dataset.status;
+  const color  = el.dataset.color;
+  _dcPending.status = status;
+  const dot = document.getElementById('dc-status-dot');
+  if (dot) dot.style.background = color;
+  document.documentElement.style.setProperty('--dc-status-color', color);
+}
+
+/* ── Salvar tudo ── */
+function dcSaveProfile() {
+  const profile = loadData('profile') || {};
+
+  const nameInput = document.getElementById('dc-input-name').value.trim();
+  if (nameInput) profile.displayName = nameInput;
+
+  const bioInput = document.getElementById('dc-input-bio').value.trim();
+  profile.bio = bioInput;
+
+  if (_dcPending.avatarDataUrl) profile.photo = _dcPending.avatarDataUrl;
+  if (_dcPending.bannerColor)   profile.bannerColor = _dcPending.bannerColor;
+  if (_dcPending.bannerImgUrl)  profile.bannerImgUrl = _dcPending.bannerImgUrl;
+  if (_dcPending.accentColor)   profile.accentColor = _dcPending.accentColor;
+  if (_dcPending.status)        profile.status = _dcPending.status;
+
+  saveData('profile', profile);
+
+  // Atualiza navbar
+  const displayName = profile.displayName || currentUser;
+  const ddUser = document.getElementById('dropdown-username');
+  if (ddUser) ddUser.textContent = displayName;
+  const footUser = document.getElementById('foot-user');
+  if (footUser) footUser.textContent = displayName;
+
+  // Mostra ok
+  const ok = document.getElementById('profile-ok');
+  ok.style.display = 'block';
+  setTimeout(() => { ok.style.display = 'none'; }, 2000);
+
+  // Limpa pending
+  _dcPending = {};
+}
+
+/* Compatibilidade: funções legadas ainda chamadas em alguns lugares */
+function saveProfileName() { dcSaveProfile(); }
+
+function openProfilePhotoModal() {
+  openProfileModal('name');
+  setTimeout(() => dcSwitchTab('customizar'), 100);
+}
+
+function closePhotoModal() { /* no-op, novo fluxo usa Discord modal */ }
+function previewPhoto() { /* no-op */ }
+function savePhoto()    { /* no-op */ }
+
+/* Atualiza bottom nav ao mudar de seção */
+const _origGoTo = goTo;
+(function() {
+  const originalGoTo = window.goTo;
+  window.goTo = function(sec) {
+    originalGoTo(sec);
+    // Atualiza bottom nav
+    ['dashboard','transactions','goals'].forEach(s => {
+      const btn = document.getElementById('bnav-' + s);
+      if (btn) btn.classList.toggle('active', s === sec);
+    });
+    document.getElementById('bnav-profile').classList.remove('active');
+  };
+})();
+
+// Inicializa o modal de perfil no load
+document.addEventListener('DOMContentLoaded', () => {
+  // Aplica accent color salvo na inicialização
+  const profile = loadData('profile') || {};
+  if (profile.accentColor) _setDcAccent(profile.accentColor);
+
+  // Fecha modal clicando fora
+  const pm = document.getElementById('profile-modal');
+  if (pm) pm.addEventListener('click', function(e) {
+    if (e.target === this) closeProfileModal();
+  });
+
+  // Inicializa save bar oculta
+  const sb = document.getElementById('dc-save-bar');
+  if (sb) sb.style.display = 'none';
+});

@@ -1770,3 +1770,663 @@ main {
   height: 100%;
   object-fit: cover;
 }
+/* ══════════════════════════════
+   MOBILE — BOTTOM NAV BAR
+══════════════════════════════ */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 150;
+  background: #000;
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.bottom-nav-inner {
+  display: flex;
+  align-items: stretch;
+  height: 56px;
+}
+
+.bottom-nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255,255,255,0.4);
+  font-family: var(--font);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0;
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav-btn.active {
+  color: #fff;
+}
+
+.bottom-nav-btn.active .bnav-icon {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.bnav-icon {
+  font-size: 20px;
+  line-height: 1;
+  opacity: 0.4;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.bottom-nav-btn.active .bnav-icon {
+  opacity: 1;
+}
+
+/* Indicador ativo: linha top */
+.bottom-nav-btn::before {
+  content: '';
+  position: absolute;
+  bottom: 56px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  border-radius: 0 0 2px 2px;
+  transition: transform 0.2s;
+}
+
+.bottom-nav-btn.active::before {
+  transform: translateX(-50%) scaleX(1);
+}
+
+@media (max-width: 767px) {
+  .bottom-nav { display: block; }
+
+  /* Ocultar a nav superior no mobile (logo + links) */
+  .nav-list { display: none !important; }
+  .logo { font-size: 16px; letter-spacing: 2px; }
+
+  /* Padding extra para não cobrir com bottom nav */
+  main {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px) + 1rem) !important;
+  }
+
+  .footer {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+
+  /* Cards 2x2 em tela pequena */
+  .cards-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1px !important;
+  }
+
+  /* Card value menor em mobile */
+  .card-value { font-size: 1.15rem; }
+
+  /* Gráficos empilhados */
+  .charts-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Formulários ocupam tela toda */
+  .form-card {
+    padding: 1.25rem;
+    max-width: 100%;
+  }
+
+  /* Filtros scrolláveis horizontalmente */
+  .filters {
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tx-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tx-top-bar .filters,
+  .add-tx-btn {
+    width: 100%;
+  }
+
+  .add-tx-btn { text-align: center; padding: 0.75rem; }
+
+  /* Goals grid 1 coluna */
+  #goals-grid .goal-card {
+    flex: 0 1 100%;
+    min-width: 0;
+  }
+
+  /* Modal ocupa quase toda a tela */
+  .modal-box {
+    max-width: 100%;
+    padding: 1.5rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* Profile modal Discord — ocupa tela inteira no mobile */
+  .discord-profile-box {
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 100dvh !important;
+    height: 100dvh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    overflow-y: auto !important;
+  }
+
+  /* Competência nav full width */
+  .competencia-row {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* Month summary 2x2 */
+  .month-summary-item { min-width: 50%; }
+
+  nav {
+    padding: 0 0.75rem;
+    height: 48px;
+    min-height: 48px;
+  }
+
+  main {
+    padding-top: calc(48px + 1rem) !important;
+    padding-left: 4% !important;
+    padding-right: 4% !important;
+  }
+}
+
+/* ══════════════════════════════
+   DISCORD — MODAL DE PERFIL
+══════════════════════════════ */
+
+/* Sobrescreve o modal de perfil existente */
+#profile-modal .modal-box {
+  max-width: 460px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+}
+
+.discord-profile-box {
+  max-width: 460px;
+  width: 90vw;
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Banner + avatar area */
+.dc-banner {
+  height: 90px;
+  position: relative;
+  overflow: hidden;
+  background: var(--dc-banner-color, #1a1a2e);
+  transition: background 0.3s;
+  cursor: pointer;
+}
+
+.dc-banner::after {
+  content: '✏️ Alterar banner';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.dc-banner:hover::after { opacity: 1; }
+
+.dc-banner-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Avatar flutuante sobre o banner */
+.dc-avatar-area {
+  position: relative;
+  padding: 0 16px;
+  margin-top: -40px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  z-index: 2;
+}
+
+.dc-avatar-wrap {
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.dc-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 6px solid var(--surface);
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  overflow: hidden;
+  transition: opacity 0.2s;
+}
+
+.dc-avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+.dc-avatar-wrap:hover .dc-avatar { opacity: 0.7; }
+
+/* Status indicator */
+.dc-status-dot {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid var(--surface);
+  background: var(--dc-status-color, #23a55a);
+  transition: background 0.3s;
+}
+
+/* Botão editar perfil no canto */
+.dc-edit-btn {
+  background: var(--surface2);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+  padding: 7px 14px;
+  border-radius: 4px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.2s;
+  margin-bottom: 8px;
+}
+
+.dc-edit-btn:hover { background: rgba(255,255,255,0.1); }
+
+/* Card interno (informações do usuário) */
+.dc-card {
+  margin: 0 12px 12px;
+  background: #111111;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.dc-username-display {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.dc-handle {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.dc-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+  margin: 10px 0;
+}
+
+.dc-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 6px;
+}
+
+.dc-bio {
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.5;
+  min-height: 20px;
+}
+
+/* Badges area */
+.dc-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.dc-badge {
+  background: var(--surface2);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Tabs no modal (Perfil / Customizar) */
+.dc-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding: 0 16px;
+  gap: 2px;
+}
+
+.dc-tab {
+  padding: 10px 16px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: color 0.2s;
+  position: relative;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.dc-tab.active {
+  color: #fff;
+  border-bottom-color: var(--dc-accent, #5865f2);
+}
+
+.dc-tab:hover:not(.active) { color: rgba(255,255,255,0.7); }
+
+/* Tab content */
+.dc-tab-content {
+  display: none;
+  padding: 16px;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.dc-tab-content.active { display: block; }
+
+/* Form dentro do modal discord */
+.dc-form-row {
+  margin-bottom: 14px;
+}
+
+.dc-form-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.dc-form-input {
+  width: 100%;
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  color: #fff;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.dc-form-input:focus {
+  border-color: var(--dc-accent, #5865f2);
+}
+
+.dc-form-textarea {
+  resize: vertical;
+  min-height: 70px;
+  line-height: 1.4;
+}
+
+/* Color pickers - accents e banner */
+.dc-color-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.dc-color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.dc-color-swatch:hover { transform: scale(1.15); }
+.dc-color-swatch.selected { border-color: #fff; transform: scale(1.15); }
+
+/* Status picker */
+.dc-status-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.dc-status-opt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.6);
+  font-family: var(--font);
+  transition: all 0.2s;
+}
+
+.dc-status-opt:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+.dc-status-opt.selected { border-color: var(--s-color); color: #fff; background: rgba(255,255,255,0.05); }
+
+.dc-status-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Salvar no discord modal */
+.dc-save-bar {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  background: rgba(0,0,0,0.3);
+}
+
+.dc-save-btn {
+  background: var(--dc-accent, #5865f2);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 20px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-weight: 600;
+}
+
+.dc-save-btn:hover { opacity: 0.85; }
+
+.dc-cancel-btn {
+  background: transparent;
+  color: rgba(255,255,255,0.5);
+  border: none;
+  padding: 8px 14px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.dc-cancel-btn:hover { color: #fff; }
+
+/* File input hidden */
+.dc-file-btn {
+  display: inline-block;
+  background: var(--surface2);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+  padding: 6px 14px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: var(--font);
+  transition: background 0.2s;
+  margin-top: 6px;
+}
+
+.dc-file-btn:hover { background: rgba(255,255,255,0.1); }
+
+/* Preview do banner */
+.dc-banner-preview {
+  height: 60px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.dc-banner-preview-inner {
+  width: 100%; height: 100%;
+  transition: background 0.3s;
+}
+
+/* Close button do modal Discord */
+.dc-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.5);
+  border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.2s;
+  line-height: 1;
+}
+
+.dc-close-btn:hover { background: rgba(255,255,255,0.15); }
+
+/* Animação suave ao abrir */
+#profile-modal .discord-profile-box {
+  animation: dcFadeIn 0.2s ease;
+}
+
+@keyframes dcFadeIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Scrollbar personalizada no tab content */
+.dc-tab-content::-webkit-scrollbar { width: 4px; }
+.dc-tab-content::-webkit-scrollbar-track { background: transparent; }
+.dc-tab-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+
+/* ══════════════════════════════
+   TOUCH — Melhorias gerais mobile
+══════════════════════════════ */
+@media (hover: none) {
+  /* Tap targets maiores */
+  .filter-btn, .type-btn { padding: 0.6rem 1rem; min-height: 44px; }
+  .dropdown-item { padding: 0.9rem 1.25rem; min-height: 44px; }
+  .del-btn { padding: 0.5rem 0 0.5rem 1rem; }
+  .add-funds-btn, .goal-toggle-btn { padding: 8px 16px; min-height: 40px; }
+
+  /* Remover hover states que atrapalham no touch */
+  .summary-card:hover { background: var(--surface); }
+  .chart-box:hover { background: var(--surface); }
+}
+
+/* ══════════════════════════════
+   SAFE AREA — iPhones com notch
+══════════════════════════════ */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  header {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+/* Pequenos ajustes de input no mobile */
+@media (max-width: 480px) {
+  .form-row input, .form-row select {
+    font-size: 16px; /* previne zoom automático no iOS */
+  }
+
+  .login-field input {
+    font-size: 16px;
+  }
+
+  .card-value { font-size: 1rem; }
+
+  .section-label { font-size: 9px; }
+}
