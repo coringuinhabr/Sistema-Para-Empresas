@@ -870,6 +870,7 @@ main {
   font-size: 11px;
   letter-spacing: 3px;
   text-transform: uppercase;
+  width: 100%;
 }
 
 .del-btn {
@@ -1121,6 +1122,7 @@ main {
   background: var(--border);
   border: 1px solid var(--border);
   width: fit-content;
+  margin: 0 auto;
 }
 
 .type-btn {
@@ -1153,6 +1155,9 @@ main {
   font-weight: 600;
   transition: all 0.3s;
   margin-top: 0.5rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .submit-btn:hover {
@@ -1168,6 +1173,7 @@ main {
   text-transform: uppercase;
   margin-top: 0.75rem;
   display: none;
+  text-align: center;
 }
 
 .success-msg.visible { display: block; }
@@ -1200,6 +1206,8 @@ main {
   flex-direction: column;
   gap: 0.75rem;
   transition: background 0.2s;
+  align-items: center;
+  text-align: center;
 }
 
 .goal-card:hover { background: var(--surface2); }
@@ -1209,6 +1217,7 @@ main {
   font-weight: 500;
   color: #fff;
   letter-spacing: -0.01em;
+  text-align: center;
 }
 
 .goal-cat {
@@ -1216,6 +1225,7 @@ main {
   letter-spacing: 2.5px;
   text-transform: uppercase;
   color: var(--muted);
+  text-align: center;
 }
 
 .goal-progress-bar {
@@ -1223,6 +1233,7 @@ main {
   background: var(--border);
   position: relative;
   overflow: hidden;
+  width: 100%;
 }
 
 .goal-progress-fill {
@@ -1238,6 +1249,7 @@ main {
   letter-spacing: 0.03em;
   color: #fff;
   line-height: 1;
+  text-align: center;
 }
 
 .goal-amounts {
@@ -1245,13 +1257,17 @@ main {
   color: var(--muted);
   letter-spacing: 0.5px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .goal-actions {
   display: flex;
   gap: 0.5rem;
   margin-top: 0.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .add-funds-btn,
@@ -1290,12 +1306,14 @@ main {
   font-size: 10px;
   color: var(--muted);
   letter-spacing: 1px;
+  text-align: center;
 }
 
 .goal-monthly {
   font-size: 10px;
   color: var(--muted);
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
 /* ══════════════════════════════
@@ -1531,10 +1549,13 @@ main {
 /* Tabs */
 .dc-tabs {
   display: flex;
+  align-items: center;
+  justify-content: center;
   border-bottom: 1px solid rgba(255,255,255,0.07);
-  padding: 0 16px;
+  padding: 0 48px 0 16px; /* espaço à direita para o X */
   gap: 2px;
   flex-shrink: 0;
+  position: relative;
 }
 
 .dc-tab {
@@ -1761,11 +1782,13 @@ main {
 
 .dc-close-btn {
   position: absolute;
-  top: 10px; right: 10px;
-  background: rgba(0,0,0,0.5);
-  border: none;
-  color: rgba(255,255,255,0.7);
-  width: 26px; height: 26px;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.6);
+  width: 28px; height: 28px;
   border-radius: 50%;
   font-size: 16px;
   cursor: pointer;
@@ -1773,11 +1796,12 @@ main {
   align-items: center;
   justify-content: center;
   z-index: 10;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
   line-height: 1;
+  flex-shrink: 0;
 }
 
-.dc-close-btn:hover { background: rgba(255,255,255,0.12); }
+.dc-close-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
 
 /* ══════════════════════════════
    TOUCH / MOBILE ADJUSTMENTS
@@ -1825,16 +1849,15 @@ main {
   }
 
   .dc-tabs {
-    padding: 0 8px;
+    padding: 0 44px 0 8px;
     gap: 0;
+    justify-content: center;
   }
 
   .dc-tab {
     padding: 10px 10px;
     font-size: 9px;
     letter-spacing: 1px;
-    flex: 1;
-    text-align: center;
   }
 
   .dc-save-bar {
